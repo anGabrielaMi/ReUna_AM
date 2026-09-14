@@ -1,0 +1,22 @@
+:host {
+  ion-content {
+    --background: #ffffff !important;
+  }
+
+  #container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+  }
+
+  h2 {
+    color: #7ddf15 !important; /* verde de marca */
+  }
+
+  p {
+    color: #000000 !important; /* texto negro visible */
+  }
+}
