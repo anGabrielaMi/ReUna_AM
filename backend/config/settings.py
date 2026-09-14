@@ -83,9 +83,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'reuna_db',        # nombre de tu base de datos
-        'USER': 'postgres',        # tu usuario de PostgreSQL
-        'PASSWORD': '123456',  # reemplázala por la real
+        'NAME': 'reuna_db',        
+        'USER': 'postgres',        
+        'PASSWORD': '******',  
         'HOST': 'localhost',
         'PORT': '5432',
     }
