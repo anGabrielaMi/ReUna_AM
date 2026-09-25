@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',   # 👈 debe ir antes de CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',   
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -141,7 +141,7 @@ MAILERS = {
     },
 }
 
-# 👇 Configuración CORS para permitir peticiones desde Ionic
+#  Configuración CORS para permitir peticiones desde Ionic
 CORS_ALLOW_ALL_ORIGINS = True
 
 
