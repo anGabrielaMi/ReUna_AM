@@ -9,7 +9,7 @@ import {
   IonMenuButton
 } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { SideMenuComponent } from '../shared/side-menu/side-menu.component';
+
 
 @Component({
   selector: 'app-home',
@@ -24,8 +24,8 @@ import { SideMenuComponent } from '../shared/side-menu/side-menu.component';
     IonToolbar,
     IonButton,
     IonButtons,
-    IonMenuButton,
-    SideMenuComponent
+    IonMenuButton
+    
   ]
 })
 export class HomePage {}

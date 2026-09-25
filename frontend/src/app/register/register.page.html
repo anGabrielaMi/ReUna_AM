@@ -1,17 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Login</ion-title>
+    <ion-title>Registro</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Iniciar sesión</ion-card-title>
+      <ion-card-title>Crear cuenta</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
-      <form (ngSubmit)="login()">
+      <form (ngSubmit)="onRegister()">
         <ion-item>
           <ion-label position="floating">Usuario</ion-label>
           <ion-input [(ngModel)]="username" name="username" required></ion-input>
@@ -19,7 +19,7 @@
 
         <ion-item>
           <ion-label position="floating">Correo</ion-label>
-          <ion-input [(ngModel)]="email" name="email" type="email"></ion-input>
+          <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
         </ion-item>
 
         <ion-item>
@@ -27,7 +27,7 @@
           <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
         </ion-item>
 
-        <ion-button expand="block" type="submit">Entrar</ion-button>
+        <ion-button expand="block" type="submit">Registrarse</ion-button>
       </form>
 
       <!-- Mensajes de feedback -->
@@ -39,10 +39,10 @@
         {{ successMsg }}
       </ion-text>
 
-      <!-- Registro -->
+      <!-- Link a login -->
       <div class="text-center mt-3">
-        <small>¿No tienes cuenta?</small><br>
-        <a routerLink="/register" class="btn btn-link">Registrarse aquí</a>
+        <small>¿Ya tienes cuenta?</small><br>
+        <a routerLink="/login" class="btn btn-link">Inicia sesión aquí</a>
       </div>
     </ion-card-content>
   </ion-card>

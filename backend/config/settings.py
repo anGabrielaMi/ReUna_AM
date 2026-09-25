@@ -44,6 +44,8 @@ INSTALLED_APPS = [
      # Apps adicionales
     'rest_framework',
     'avisos',
+    'comunidades',
+    'registro'
 ]
 
 MIDDLEWARE = [
@@ -83,9 +85,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'reuna_db',        # nombre de tu base de datos
-        'USER': 'postgres',        # tu usuario de PostgreSQL
-        'PASSWORD': '123456',  # reemplázala por la real
+        'NAME': 'reuna_db',       
+        'USER': 'postgres',       
+        'PASSWORD': '123456',  
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -150,7 +152,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 #]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    ]
 }

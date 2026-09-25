@@ -1,0 +1,40 @@
+ion-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  --background: #f4f5f8;
+}
+
+ion-card {
+  width: 90%;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+ion-card-header {
+  text-align: center;
+}
+
+ion-item {
+  margin-top: 12px;
+}
+
+ion-button {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #27ae60;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}

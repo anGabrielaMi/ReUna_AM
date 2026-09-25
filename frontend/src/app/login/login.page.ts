@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
-  IonCard, IonCardHeader, IonCardTitle,
-  IonCardContent, IonItem, IonButton, IonInput, IonLabel, IonText
+  IonCard, IonCardHeader, IonCardTitle, IonCardContent,
+  IonItem, IonButton, IonInput, IonLabel, IonText
 } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -15,8 +16,8 @@ import { AuthService } from '../services/auth.service';
   standalone: true,
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar,
-    IonCard, IonCardHeader, IonCardTitle,
-    IonCardContent, IonItem, IonButton, IonInput, IonLabel, IonText,
+    IonCard, IonCardHeader, IonCardTitle, IonCardContent,
+    IonItem, IonButton, IonInput, IonLabel, IonText,
     CommonModule, FormsModule
   ]
 })
@@ -29,7 +30,8 @@ export class LoginPage implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -40,21 +42,21 @@ export class LoginPage implements OnInit {
     this.authService.login(this.username || this.email, this.password).subscribe({
       next: (data: any) => {
         console.log('Login exitoso:', data);
-
         localStorage.setItem('access', data.access);
         localStorage.setItem('refresh', data.refresh);
 
+        // Redirección según rol o por defecto a comunidades
         if (data.rol) {
           localStorage.setItem('rol', data.rol);
           if (data.rol === 'Cliente') {
-            window.location.href = '/home/';
+            this.router.navigate(['/home']);
           } else if (data.rol === 'Administrador') {
-            window.location.href = '/admin/';
+            this.router.navigate(['/admin']);
           } else {
             this.errorMsg = 'Rol desconocido.';
           }
         } else {
-          window.location.href = '/home/';
+          this.router.navigate(['/home']); //  >> flujo normal
         }
 
         // Mensaje de éxito
@@ -62,7 +64,7 @@ export class LoginPage implements OnInit {
         this.errorMsg = '';
         this.cdr.detectChanges();
 
-        // 👇 limpiar automáticamente después de 3 segundos
+        // Limpiar automáticamente después de 3 segundos
         setTimeout(() => {
           this.successMsg = '';
           this.cdr.detectChanges();

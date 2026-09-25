@@ -14,8 +14,8 @@ import {
   IonItem,
   IonButton,
   IonIcon,
-  IonList,       // 👈 añadido
-  IonLabel       // 👈 añadido
+  IonList,       
+  IonLabel     
 } from '@ionic/angular';
 
 import { AvisosService, Aviso } from '../services/avisos.service';
@@ -38,8 +38,8 @@ import { AvisosService, Aviso } from '../services/avisos.service';
     IonItem,
     IonButton,
     IonIcon,
-    IonList,     // 👈 añadido
-    IonLabel,    // 👈 añadido
+    IonList,     
+    IonLabel,    
     CommonModule,
     FormsModule
   ]
