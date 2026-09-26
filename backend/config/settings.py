@@ -118,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-cl'
 
 TIME_ZONE = 'UTC'
 
@@ -136,11 +136,13 @@ STATIC_URL = 'static/'
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# CORREGIDO: la clave correcta es EMAIL_BACKEND (no "MAILERS", que Django no reconoce).
+# En consola imprime el correo en la terminal donde corre Django — ideal para probar sin SMTP real.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# NUEVO: usado para armar el link de recuperación de contraseña (ej: http://localhost:8100/reset-password?uid=...&token=...)
+# Cambia el puerto si tu app Ionic corre en otro distinto.
+FRONTEND_URL = 'http://localhost:8100'
 
 #  Configuración CORS para permitir peticiones desde Ionic
 CORS_ALLOW_ALL_ORIGINS = True

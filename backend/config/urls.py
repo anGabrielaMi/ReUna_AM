@@ -31,4 +31,5 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/register/', RegistroView.as_view(), name='register'),  # nuevo endpoint
+    path('api/', include('registro.urls')),  # NUEVO: password-reset/ y password-reset-confirm/
 ]

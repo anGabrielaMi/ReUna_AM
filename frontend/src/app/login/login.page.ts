@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
@@ -18,11 +19,10 @@ import { Router } from '@angular/router';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonItem, IonButton, IonInput, IonLabel, IonText,
-    CommonModule, FormsModule
+    CommonModule, FormsModule, RouterLink
   ]
 })
 export class LoginPage implements OnInit {
-  email: string = '';
   username: string = '';
   password: string = '';
   errorMsg: string = '';
@@ -39,7 +39,7 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    this.authService.login(this.username || this.email, this.password).subscribe({
+    this.authService.login(this.username, this.password).subscribe({
       next: (data: any) => {
         console.log('Login exitoso:', data);
         localStorage.setItem('access', data.access);

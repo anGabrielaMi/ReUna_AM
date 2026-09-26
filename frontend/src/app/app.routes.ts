@@ -21,6 +21,24 @@ export const routes: Routes = [
   {
     path: 'register',
     loadComponent: () => import('./register/register.page').then(m => m.RegisterPage)
+  },
+  {
+    // NUEVO: pantalla para solicitar el correo de recuperación
+    path: 'forgot-password',
+    loadComponent: () => import('./forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage)
+  },
+  {
+    // NUEVO: pantalla donde se ingresa la nueva contraseña (uid y token llegan por query params)
+    path: 'reset-password',
+    loadComponent: () => import('./reset-password/reset-password.page').then(m => m.ResetPasswordPage)
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./forgot-password/forgot-password.page').then( m => m.ForgotPasswordPage)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./reset-password/reset-password.page').then( m => m.ResetPasswordPage)
   }
   // otras rutas...
 ];

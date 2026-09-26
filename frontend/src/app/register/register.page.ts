@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
@@ -18,7 +19,7 @@ import { Router } from '@angular/router';
     IonContent, IonHeader, IonTitle, IonToolbar,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonItem, IonLabel, IonInput, IonButton, IonText,
-    CommonModule, FormsModule
+    CommonModule, FormsModule, RouterLink
   ]
 })
 export class RegisterPage {
@@ -39,9 +40,32 @@ export class RegisterPage {
         this.router.navigate(['/login']);
       },
       error: err => {
-        this.errorMsg = 'Error al registrar usuario';
+        this.errorMsg = this.extraerMensajeError(err);
         this.successMsg = '';
       }
     });
+  }
+
+  private extraerMensajeError(err: any): string {
+    const data = err?.error;
+
+    if (!data) {
+      return 'Error al registrar usuario';
+    }
+
+    // DRF devuelve algo como { "email": ["This field is required."], "username": [...] }
+    // Tomamos el primer campo con error y su primer mensaje.
+    const primerCampo = Object.keys(data)[0];
+    if (primerCampo && Array.isArray(data[primerCampo]) && data[primerCampo].length > 0) {
+      const etiquetas: { [key: string]: string } = {
+        email: 'Correo',
+        username: 'Usuario',
+        password: 'Contraseña'
+      };
+      const nombreCampo = etiquetas[primerCampo] || primerCampo;
+      return `${nombreCampo}: ${data[primerCampo][0]}`;
+    }
+
+    return 'Error al registrar usuario';
   }
 }

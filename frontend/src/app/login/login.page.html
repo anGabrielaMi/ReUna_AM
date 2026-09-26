@@ -18,11 +18,6 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Correo</ion-label>
-          <ion-input [(ngModel)]="email" name="email" type="email"></ion-input>
-        </ion-item>
-
-        <ion-item>
           <ion-label position="floating">Contraseña</ion-label>
           <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
         </ion-item>
@@ -30,7 +25,10 @@
         <ion-button expand="block" type="submit">Entrar</ion-button>
       </form>
 
-      <!-- Mensajes de feedback -->
+      <div class="text-center mt-3">
+        <a routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
+      </div>
+
       <ion-text color="danger" *ngIf="errorMsg">
         {{ errorMsg }}
       </ion-text>
@@ -39,7 +37,6 @@
         {{ successMsg }}
       </ion-text>
 
-      <!-- Registro -->
       <div class="text-center mt-3">
         <small>¿No tienes cuenta?</small><br>
         <a routerLink="/register" class="btn btn-link">Registrarse aquí</a>
