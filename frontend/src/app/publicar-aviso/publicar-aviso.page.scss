@@ -1,0 +1,42 @@
+ion-content {
+  --background: #f1f2f7;
+}
+
+.centrado {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(31 41 55 / 10%);
+}
+
+.comunidad-fija {
+  margin: 0;
+  color: #374151;
+}
+
+ion-note {
+  font-size: 0.85rem;
+}
+
+.mensaje-info {
+  max-width: 640px;
+  margin: 24px auto;
+  text-align: center;
+  color: #6b7280;
+}
+
+.mensaje-error {
+  margin: 0;
+  color: var(--ion-color-danger);
+}

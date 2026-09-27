@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/avisos" text="Avisos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Publicar aviso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="cargando" class="centrado">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- Criterio: un colaborador no puede publicar -->
+  <p *ngIf="!cargando && !esLider && !error" class="mensaje-info">
+    Solo los líderes de una comunidad pueden publicar avisos.
+  </p>
+
+  <form *ngIf="!cargando && esLider" class="formulario" (ngSubmit)="publicar()">
+    <!-- Comunidad: automática si es líder de una sola; si es de varias, elige -->
+    <p *ngIf="!variasComunidades" class="comunidad-fija">
+      Publicarás en <strong>{{ comunidadesLider[0].nombre }}</strong>
+    </p>
+    <ion-select
+      *ngIf="variasComunidades"
+      label="Comunidad"
+      labelPlacement="stacked"
+      fill="outline"
+      interface="popover"
+      placeholder="Elige la comunidad"
+      name="comunidad"
+      [(ngModel)]="aviso.comunidad">
+      <ion-select-option *ngFor="let c of comunidadesLider" [value]="c.id">{{ c.nombre }}</ion-select-option>
+    </ion-select>
+
+    <!-- Criterio: el líder selecciona la categoría -->
+    <ion-select
+      label="Categoría"
+      labelPlacement="stacked"
+      fill="outline"
+      interface="popover"
+      placeholder="Elige la categoría"
+      name="categoria"
+      [(ngModel)]="aviso.categoria">
+      <ion-select-option *ngFor="let c of categorias" [value]="c.valor">{{ c.nombre }}</ion-select-option>
+    </ion-select>
+
+    <ion-input
+      label="Título"
+      labelPlacement="stacked"
+      fill="outline"
+      maxlength="200"
+      placeholder="Ej: Reunión mensual de vecinos"
+      name="titulo"
+      [(ngModel)]="aviso.titulo">
+    </ion-input>
+
+    <ion-textarea
+      label="Contenido"
+      labelPlacement="stacked"
+      fill="outline"
+      [autoGrow]="true"
+      rows="6"
+      placeholder="Escribe el aviso completo"
+      name="contenido"
+      [(ngModel)]="aviso.contenido">
+    </ion-textarea>
+
+    <ion-note>Todos los campos son obligatorios.</ion-note>
+
+    <p *ngIf="error" class="mensaje-error">{{ error }}</p>
+
+    <ion-button type="submit" expand="block" [disabled]="!formularioValido || enviando">
+      <ion-spinner *ngIf="enviando" name="crescent"></ion-spinner>
+      <span *ngIf="!enviando">Publicar</span>
+    </ion-button>
+  </form>
+
+  <p *ngIf="!cargando && !esLider && error" class="mensaje-error">{{ error }}</p>
+</ion-content>

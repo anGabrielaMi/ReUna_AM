@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+// Comunidad del usuario con su rol en ella (GET /api/comunidades/mias/)
+export interface MiComunidad {
+  id: number;
+  nombre: string;
+  rol: 'colaborador' | 'lider';
+}
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +21,11 @@ export class ComunidadService {
     return this.http.get<any[]>(this.apiUrl, {
       headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
     });
+  }
+
+  // Publicar aviso: comunidades del usuario con su rol (el token lo agrega el interceptor)
+  getMisComunidades(): Observable<MiComunidad[]> {
+    return this.http.get<MiComunidad[]>(`${this.apiUrl}mias/`);
   }
 
   unirseComunidad(id: number) {

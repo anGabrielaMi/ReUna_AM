@@ -1,25 +1,84 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Avisos</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <section class="page-header">
-    <h1>Bienvenido</h1>
+    <h1>Saludos! estás en Reúna</h1>
     <p>Explora tus avisos en un solo lugar.</p>
+    <!-- Publicar aviso: solo visible para líderes (criterio: un colaborador no puede publicar) -->
+    <ion-button *ngIf="esLider" class="btn-publicar" routerLink="/avisos/nuevo">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Publicar aviso
+    </ion-button>
   </section>
 
+  <!-- Criterio 3: filtros por categoría y rango de fechas -->
+  <section class="filtros">
+    <ion-select
+      label="Categoría"
+      labelPlacement="stacked"
+      fill="outline"
+      interface="popover"
+      [(ngModel)]="filtros.categoria">
+      <ion-select-option value="">Todas</ion-select-option>
+      <ion-select-option *ngFor="let c of categorias" [value]="c.valor">{{ c.nombre }}</ion-select-option>
+    </ion-select>
+
+    <ion-input
+      type="date"
+      label="Desde"
+      labelPlacement="stacked"
+      fill="outline"
+      [(ngModel)]="filtros.desde">
+    </ion-input>
+
+    <ion-input
+      type="date"
+      label="Hasta"
+      labelPlacement="stacked"
+      fill="outline"
+      [(ngModel)]="filtros.hasta">
+    </ion-input>
+
+    <div class="filtros-acciones">
+      <ion-button (click)="loadAvisos()">
+        <ion-icon slot="start" name="funnel-outline"></ion-icon>
+        Filtrar
+      </ion-button>
+      <ion-button fill="outline" color="medium" (click)="limpiarFiltros()" [disabled]="!hayFiltros">
+        <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+        Limpiar
+      </ion-button>
+    </div>
+  </section>
+
+  <p *ngIf="error" class="mensaje-error">{{ error }}</p>
+
+  <!-- Visitante sin sesión: solo ve avisos de plataforma -->
+  <p *ngIf="!sesionIniciada" class="aviso-login">
+    Estás viendo solo los avisos públicos.
+    <a routerLink="/login">Inicia sesión</a> para ver los avisos de tus comunidades.
+  </p>
+
+  <!-- Criterio 1: lista ordenada por fecha (el orden viene desde la API) -->
   <main class="cards-grid">
-    <ion-card *ngFor="let aviso of avisos">
+    <ion-card *ngFor="let aviso of avisos" button [routerLink]="['/avisos', aviso.id]">
       <ion-card-header>
+        <ion-badge [class]="'cat cat-' + aviso.categoria">{{ aviso.categoria_display }}</ion-badge>
         <ion-card-title>{{ aviso.titulo }}</ion-card-title>
-        <ion-card-subtitle>Publicado: {{ aviso.fecha_publicacion }}</ion-card-subtitle>
+        <ion-card-subtitle>{{ aviso.comunidad_nombre }} · Publicado: {{ aviso.fecha_publicacion | date:'dd-MM-yyyy' }}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        {{ aviso.contenido }}
+        {{ resumen(aviso.contenido) }}
       </ion-card-content>
       <ion-item lines="none">
+        <!-- Criterio 2: abrir el aviso completo -->
         <ion-button fill="clear" slot="end">
           Ver aviso
           <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
@@ -27,9 +86,9 @@
       </ion-item>
     </ion-card>
 
-    <!-- Mensaje si no hay avisos -->
-    <div *ngIf="avisos.length === 0" class="no-avisos">
-      <p>No hay avisos disponibles.</p>
+    <div *ngIf="!cargando && !error && avisos.length === 0" class="no-avisos">
+      <p *ngIf="hayFiltros">No hay avisos que coincidan con los filtros.</p>
+      <p *ngIf="!hayFiltros">No hay avisos disponibles.</p>
     </div>
   </main>
 </ion-content>

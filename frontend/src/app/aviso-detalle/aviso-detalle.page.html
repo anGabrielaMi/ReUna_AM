@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/avisos" text="Avisos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle del aviso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="cargando" class="centrado">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <p *ngIf="error" class="mensaje-error">{{ error }}</p>
+
+  <article *ngIf="aviso" class="aviso">
+    <ion-badge [class]="'cat cat-' + aviso.categoria">{{ aviso.categoria_display }}</ion-badge>
+    <h1>{{ aviso.titulo }}</h1>
+    <p class="fecha">
+      {{ aviso.comunidad_nombre }} · Publicado el {{ aviso.fecha_publicacion | date:'dd-MM-yyyy' }}
+      <span *ngIf="fueEditado(aviso)"> · Editado el {{ aviso.fecha_edicion | date:'dd-MM-yyyy HH:mm' }}</span>
+    </p>
+    <!-- Contenido completo, respetando saltos de línea -->
+    <div class="contenido">{{ aviso.contenido }}</div>
+  </article>
+</ion-content>

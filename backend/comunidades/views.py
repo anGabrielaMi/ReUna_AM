@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Comunidad
+from .models import Comunidad, UsuarioComunidad
 from .serializers import ComunidadSerializer, RegistroSerializer
 from django.contrib.auth.models import User
 
@@ -9,6 +9,19 @@ class ComunidadViewSet(viewsets.ModelViewSet):
     queryset = Comunidad.objects.all()
     serializer_class = ComunidadSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    # Publicar aviso: GET /api/comunidades/mias/ -> comunidades del usuario con su rol
+    # La app lo usa para saber si es líder (mostrar "Publicar aviso") y en qué comunidades
+    @action(detail=False, methods=['get'])
+    def mias(self, request):
+        membresias = (UsuarioComunidad.objects
+                      .filter(usuario=request.user)
+                      .select_related('comunidad')
+                      .order_by('comunidad__nombre'))
+        return Response([
+            {'id': m.comunidad.id, 'nombre': m.comunidad.nombre, 'rol': m.rol}
+            for m in membresias
+        ])
 
     @action(detail=True, methods=['post'])
     def unirse(self, request, pk=None):

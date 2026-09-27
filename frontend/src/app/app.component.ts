@@ -13,6 +13,14 @@ import {
   IonIcon,
   IonLabel
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  notificationsOutline,
+  calendarOutline,
+  helpCircleOutline,
+  documentTextOutline,
+  informationCircleOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
@@ -35,4 +43,16 @@ import {
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor() {
+    // Íconos del menú lateral: en componentes standalone hay que registrarlos
+    // con addIcons, si no Ionic no los encuentra y no se dibujan
+    addIcons({
+      notificationsOutline,
+      calendarOutline,
+      helpCircleOutline,
+      documentTextOutline,
+      informationCircleOutline
+    });
+  }
+}
