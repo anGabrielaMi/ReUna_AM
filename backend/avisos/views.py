@@ -16,7 +16,8 @@ class AvisoViewSet(viewsets.ModelViewSet):
       ?categoria=evento
       ?desde=2026-09-01&hasta=2026-09-30   (formato YYYY-MM-DD)
     POST                         -> administradores y líderes (solo en su comunidad)
-    PUT / PATCH / DELETE         -> solo administradores (is_staff)
+    PUT / PATCH                  -> administradores y líderes (solo avisos de su comunidad)
+    DELETE                       -> solo administradores (is_staff)
     """
     serializer_class = AvisoSerializer
     queryset = Aviso.objects.all()
@@ -26,25 +27,61 @@ class AvisoViewSet(viewsets.ModelViewSet):
         # cualquiera puede consultar; crear/editar/borrar solo administradores (is_staff)
         if self.action in ('list', 'retrieve'):
             return [AllowAny()]
-        # Publicar aviso: crear requiere sesión; si es líder se valida en perform_create
-        if self.action == 'create':
+        # Publicar / editar: requiere sesión; si es líder se valida en perform_create / perform_update
+        if self.action in ('create', 'update', 'partial_update'):
             return [IsAuthenticated()]
         return [IsAdminUser()]
+
+    def _ids_lider(self):
+        # Comunidades donde el usuario actual es líder (se calcula una vez por petición)
+        if not hasattr(self, '_cache_ids_lider'):
+            user = self.request.user
+            self._cache_ids_lider = set(
+                UsuarioComunidad.objects
+                .filter(usuario=user, rol=UsuarioComunidad.ROL_LIDER)
+                .values_list('comunidad_id', flat=True)
+            ) if user.is_authenticated else set()
+        return self._cache_ids_lider
+
+    def get_serializer_context(self):
+        # Para que el serializer calcule 'puede_editar' sin consultar la BD por cada aviso
+        context = super().get_serializer_context()
+        user = self.request.user
+        context['es_admin'] = user.is_authenticated and user.is_staff
+        context['ids_lider'] = self._ids_lider()
+        return context
+
+    def perform_update(self, serializer):
+        user = self.request.user
+        aviso = serializer.instance
+
+        # El administrador edita sin restricciones
+        if user.is_staff:
+            serializer.save(editado_por=user)
+            return
+
+        # Criterio: no puede editar avisos de comunidades donde no es líder, ni avisos de Reúna
+        if aviso.comunidad_id is None or aviso.comunidad_id not in self._ids_lider():
+            raise PermissionDenied('Solo los líderes de la comunidad del aviso pueden editarlo.')
+
+        # Criterio: la comunidad no se puede cambiar
+        nueva = serializer.validated_data.get('comunidad', aviso.comunidad)
+        if nueva != aviso.comunidad:
+            raise ValidationError({'comunidad': 'La comunidad del aviso no se puede cambiar.'})
+
+        # Criterio: queda registrado quién hizo la última edición (la fecha la pone fecha_edicion)
+        serializer.save(editado_por=user)
 
     def perform_create(self, serializer):
         user = self.request.user
 
         # El administrador publica sin restricciones (también avisos de plataforma)
         if user.is_staff:
-            serializer.save()
+            serializer.save(publicado_por=user)
             return
 
         # Comunidades donde el usuario es líder
-        ids_lider = set(
-            UsuarioComunidad.objects
-            .filter(usuario=user, rol=UsuarioComunidad.ROL_LIDER)
-            .values_list('comunidad_id', flat=True)
-        )
+        ids_lider = self._ids_lider()
 
         # Criterio: un colaborador no puede publicar
         if not ids_lider:
@@ -55,7 +92,7 @@ class AvisoViewSet(viewsets.ModelViewSet):
         # Criterio: se asocia automáticamente a la comunidad del líder; si es de varias, elige
         if comunidad is None:
             if len(ids_lider) == 1:
-                serializer.save(comunidad_id=next(iter(ids_lider)))
+                serializer.save(comunidad_id=next(iter(ids_lider)), publicado_por=user)
                 return
             raise ValidationError({'comunidad': 'Eres líder en varias comunidades: elige a cuál va el aviso.'})
 
@@ -63,7 +100,7 @@ class AvisoViewSet(viewsets.ModelViewSet):
         if comunidad.id not in ids_lider:
             raise PermissionDenied('No eres líder de esa comunidad.')
 
-        serializer.save()
+        serializer.save(publicado_por=user)
 
     def get_queryset(self):
         user = self.request.user

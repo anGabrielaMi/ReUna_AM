@@ -24,6 +24,11 @@ export const routes: Routes = [
     loadComponent: () => import('./publicar-aviso/publicar-aviso.page').then(m => m.PublicarAvisoPage)
   },
   {
+    // Editar aviso desde la app (líder): reutiliza el formulario de publicar
+    path: 'avisos/:id/editar',
+    loadComponent: () => import('./publicar-aviso/publicar-aviso.page').then(m => m.PublicarAvisoPage)
+  },
+  {
     // Criterio 2: detalle de un aviso
     path: 'avisos/:id',
     loadComponent: () => import('./aviso-detalle/aviso-detalle.page').then(m => m.AvisoDetallePage)

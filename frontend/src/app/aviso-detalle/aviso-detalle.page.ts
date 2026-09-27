@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -9,8 +9,12 @@ import {
   IonButtons,
   IonBackButton,
   IonBadge,
-  IonSpinner
+  IonSpinner,
+  IonButton,
+  IonIcon
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { createOutline } from 'ionicons/icons';
 
 import { AvisosService, Aviso } from '../services/avisos.service';
 
@@ -29,7 +33,10 @@ import { AvisosService, Aviso } from '../services/avisos.service';
     IonButtons,
     IonBackButton,
     IonBadge,
-    IonSpinner
+    IonSpinner,
+    IonButton,
+    IonIcon,
+    RouterLink
   ]
 })
 export class AvisoDetallePage implements OnInit {
@@ -41,9 +48,16 @@ export class AvisoDetallePage implements OnInit {
     private route: ActivatedRoute,
     private avisosService: AvisosService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    addIcons({ createOutline });
+  }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  // Se recarga cada vez que se entra (así se ven los cambios al volver de editar)
+  ionViewWillEnter() {
+    this.cargando = true;
+    this.error = '';
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) {
       this.error = 'Aviso no válido.';
@@ -66,8 +80,10 @@ export class AvisoDetallePage implements OnInit {
     });
   }
 
-  // Muestra "Editado el…" solo si se editó un día distinto al de publicación
+  // Muestra "Editado…" si alguien lo editó (queda registrado quién),
+  // o en avisos antiguos si la fecha de edición es de otro día que la publicación
   fueEditado(aviso: Aviso): boolean {
+    if (aviso.editado_por_nombre) return true;
     if (!aviso.fecha_edicion) return false;
     return aviso.fecha_edicion.slice(0, 10) !== aviso.fecha_publicacion;
   }

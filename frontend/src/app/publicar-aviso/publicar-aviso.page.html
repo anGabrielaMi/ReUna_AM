@@ -1,9 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/avisos" text="Avisos"></ion-back-button>
+      <ion-back-button [defaultHref]="modoEdicion ? '/avisos/' + idAviso : '/avisos'" text="Volver"></ion-back-button>
     </ion-buttons>
-    <ion-title>Publicar aviso</ion-title>
+    <ion-title>{{ modoEdicion ? 'Editar aviso' : 'Publicar aviso' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -12,14 +12,21 @@
     <ion-spinner></ion-spinner>
   </div>
 
-  <!-- Criterio: un colaborador no puede publicar -->
-  <p *ngIf="!cargando && !esLider && !error" class="mensaje-info">
-    Solo los líderes de una comunidad pueden publicar avisos.
+  <!-- Criterio: un colaborador no puede publicar ni editar -->
+  <p *ngIf="!cargando && !puedeUsarFormulario && !error" class="mensaje-info">
+    {{ modoEdicion
+        ? 'Solo los líderes de la comunidad de este aviso pueden editarlo.'
+        : 'Solo los líderes de una comunidad pueden publicar avisos.' }}
   </p>
 
-  <form *ngIf="!cargando && esLider" class="formulario" (ngSubmit)="publicar()">
-    <!-- Comunidad: automática si es líder de una sola; si es de varias, elige -->
-    <p *ngIf="!variasComunidades" class="comunidad-fija">
+  <form *ngIf="!cargando && puedeUsarFormulario" class="formulario" (ngSubmit)="guardar()">
+    <!-- Editar: la comunidad se muestra pero no se puede cambiar -->
+    <p *ngIf="modoEdicion" class="comunidad-fija">
+      Aviso de <strong>{{ comunidadNombre }}</strong>
+    </p>
+
+    <!-- Publicar: comunidad automática si es líder de una sola; si es de varias, elige -->
+    <p *ngIf="!modoEdicion && !variasComunidades" class="comunidad-fija">
       Publicarás en <strong>{{ comunidadesLider[0].nombre }}</strong>
     </p>
     <ion-select
@@ -34,7 +41,6 @@
       <ion-select-option *ngFor="let c of comunidadesLider" [value]="c.id">{{ c.nombre }}</ion-select-option>
     </ion-select>
 
-    <!-- Criterio: el líder selecciona la categoría -->
     <ion-select
       label="Categoría"
       labelPlacement="stacked"
@@ -73,9 +79,9 @@
 
     <ion-button type="submit" expand="block" [disabled]="!formularioValido || enviando">
       <ion-spinner *ngIf="enviando" name="crescent"></ion-spinner>
-      <span *ngIf="!enviando">Publicar</span>
+      <span *ngIf="!enviando">{{ modoEdicion ? 'Guardar cambios' : 'Publicar' }}</span>
     </ion-button>
   </form>
 
-  <p *ngIf="!cargando && !esLider && error" class="mensaje-error">{{ error }}</p>
+  <p *ngIf="!cargando && !puedeUsarFormulario && error" class="mensaje-error">{{ error }}</p>
 </ion-content>

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from comunidades.models import Comunidad
 
 
@@ -28,6 +29,14 @@ class Aviso(models.Model):
         null=True,
         blank=True,
         related_name='avisos',
+    )
+    # Editar aviso desde la app (líder): registro de quién publicó y quién editó por última vez
+    # (SET_NULL: si se borra el usuario, el aviso se mantiene)
+    publicado_por = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='avisos_publicados',
+    )
+    editado_por = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='avisos_editados',
     )
 
     class Meta:

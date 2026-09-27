@@ -18,9 +18,22 @@
     <ion-badge [class]="'cat cat-' + aviso.categoria">{{ aviso.categoria_display }}</ion-badge>
     <h1>{{ aviso.titulo }}</h1>
     <p class="fecha">
-      {{ aviso.comunidad_nombre }} · Publicado el {{ aviso.fecha_publicacion | date:'dd-MM-yyyy' }}
-      <span *ngIf="fueEditado(aviso)"> · Editado el {{ aviso.fecha_edicion | date:'dd-MM-yyyy HH:mm' }}</span>
+      {{ aviso.comunidad_nombre }} · Publicado
+      <span *ngIf="aviso.publicado_por_nombre">por {{ aviso.publicado_por_nombre }}</span>
+      el {{ aviso.fecha_publicacion | date:'dd-MM-yyyy' }}
     </p>
+    <!-- Editar aviso (líder): registro de quién y cuándo editó por última vez -->
+    <p *ngIf="fueEditado(aviso)" class="fecha editado">
+      Editado
+      <span *ngIf="aviso.editado_por_nombre">por {{ aviso.editado_por_nombre }}</span>
+      el {{ aviso.fecha_edicion | date:'dd-MM-yyyy HH:mm' }}
+    </p>
+
+    <!-- Solo líderes de la comunidad del aviso (o admin) ven esta opción -->
+    <ion-button *ngIf="aviso.puede_editar" fill="outline" size="small" [routerLink]="['/avisos', aviso.id, 'editar']">
+      <ion-icon slot="start" name="create-outline"></ion-icon>
+      Editar
+    </ion-button>
     <!-- Contenido completo, respetando saltos de línea -->
     <div class="contenido">{{ aviso.contenido }}</div>
   </article>

@@ -29,11 +29,12 @@ ion-content {
 }
 
 .fecha {
-  margin: 0 0 20px;
+  margin: 0 0 4px;
   color: #6b7280;
 }
 
 .contenido {
+  margin-top: 20px;
   color: #374151;
   font-size: 1.05rem;
   line-height: 1.7;
@@ -47,3 +48,11 @@ ion-content {
 .cat-encuesta   { --background: #fef3c7; --color: #92400e; }
 .cat-urgente    { --background: #fee2e2; --color: #991b1b; }
 .cat-general    { --background: #e0e7ff; --color: #3730a3; }
+
+.fecha.editado {
+  font-size: 0.9rem;
+}
+
+.aviso ion-button {
+  margin: 12px 0 0;
+}

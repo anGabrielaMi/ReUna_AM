@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -21,7 +21,9 @@ import {
 import { AvisosService, NuevoAviso, CATEGORIAS_AVISO } from '../services/avisos.service';
 import { ComunidadService, MiComunidad } from '../services/comunidad.service';
 
-// Publicar aviso: formulario para líderes de comunidad
+// Formulario de avisos para líderes:
+//   /avisos/nuevo        -> Publicar aviso
+//   /avisos/:id/editar   -> Editar aviso desde la app (líder)
 @Component({
   selector: 'app-publicar-aviso',
   templateUrl: './publicar-aviso.page.html',
@@ -47,9 +49,14 @@ import { ComunidadService, MiComunidad } from '../services/comunidad.service';
 })
 export class PublicarAvisoPage {
   categorias = CATEGORIAS_AVISO;
-  comunidadesLider: MiComunidad[] = [];   // solo donde el usuario es líder
+  comunidadesLider: MiComunidad[] = [];   // solo donde el usuario es líder (modo publicar)
 
   aviso: NuevoAviso = { titulo: '', contenido: '', categoria: '', comunidad: null };
+
+  // Modo edición
+  idAviso: number | null = null;
+  comunidadNombre = '';        // en edición la comunidad se muestra pero no se cambia
+  puedeEditar = false;
 
   cargando = true;
   enviando = false;
@@ -58,9 +65,14 @@ export class PublicarAvisoPage {
   constructor(
     private avisosService: AvisosService,
     private comunidadService: ComunidadService,
+    private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
+
+  get modoEdicion(): boolean {
+    return this.idAviso !== null;
+  }
 
   ionViewWillEnter() {
     // Formulario limpio cada vez que se entra
@@ -68,6 +80,18 @@ export class PublicarAvisoPage {
     this.error = '';
     this.cargando = true;
 
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.idAviso = id ? id : null;
+
+    if (this.modoEdicion) {
+      this.cargarAvisoParaEditar(this.idAviso!);
+    } else {
+      this.cargarComunidadesLider();
+    }
+  }
+
+  // ---------- Publicar ----------
+  private cargarComunidadesLider() {
     this.comunidadService.getMisComunidades().subscribe({
       next: (comunidades) => {
         this.comunidadesLider = comunidades.filter(c => c.rol === 'lider');
@@ -86,46 +110,73 @@ export class PublicarAvisoPage {
     });
   }
 
-  get esLider(): boolean {
-    return this.comunidadesLider.length > 0;
+  // ---------- Editar ----------
+  private cargarAvisoParaEditar(id: number) {
+    this.avisosService.getAviso(id).subscribe({
+      next: (a) => {
+        this.puedeEditar = a.puede_editar;
+        this.comunidadNombre = a.comunidad_nombre;
+        this.aviso = {
+          titulo: a.titulo,
+          contenido: a.contenido,
+          categoria: a.categoria,
+          comunidad: a.comunidad
+        };
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = err.status === 404 ? 'El aviso no existe.' : 'No se pudo cargar el aviso.';
+        this.cargando = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // ¿Se muestra el formulario?
+  get puedeUsarFormulario(): boolean {
+    return this.modoEdicion ? this.puedeEditar : this.comunidadesLider.length > 0;
   }
 
   get variasComunidades(): boolean {
-    return this.comunidadesLider.length > 1;
+    return !this.modoEdicion && this.comunidadesLider.length > 1;
   }
 
   get formularioValido(): boolean {
     return !!(
       this.aviso.titulo.trim() &&
       this.aviso.contenido.trim() &&
-      this.aviso.categoria &&                        // criterio: el líder elige la categoría
+      this.aviso.categoria &&                        // el líder elige la categoría
       (this.aviso.comunidad || !this.variasComunidades)
     );
   }
 
-  publicar() {
+  guardar() {
     if (!this.formularioValido || this.enviando) return;
 
     this.enviando = true;
     this.error = '';
-    const datos: NuevoAviso = {
-      ...this.aviso,
-      titulo: this.aviso.titulo.trim(),
-      contenido: this.aviso.contenido.trim()
-    };
+    const titulo = this.aviso.titulo.trim();
+    const contenido = this.aviso.contenido.trim();
 
-    this.avisosService.crearAviso(datos).subscribe({
-      next: () => {
+    const peticion = this.modoEdicion
+      // Editar: solo título, contenido y categoría (la comunidad no se cambia)
+      ? this.avisosService.actualizarAviso(this.idAviso!, { titulo, contenido, categoria: this.aviso.categoria })
+      : this.avisosService.crearAviso({ ...this.aviso, titulo, contenido });
+
+    peticion.subscribe({
+      next: (guardado) => {
         this.enviando = false;
-        this.router.navigate(['/avisos']);
+        // Editar vuelve al detalle; publicar vuelve a la lista
+        this.router.navigate(this.modoEdicion ? ['/avisos', guardado.id] : ['/avisos']);
       },
       error: (err) => {
-        console.error('Error publicando aviso:', err);
-        // Mensajes que manda el backend (403: no es líder ahí, 400: falta comunidad, etc.)
+        console.error('Error guardando aviso:', err);
+        // Mensajes del backend (403: no es líder ahí, 400: falta comunidad, etc.)
         this.error =
           err.error?.detail ||
           err.error?.comunidad ||
-          'No se pudo publicar el aviso. Revisa los datos e intenta de nuevo.';
+          'No se pudo guardar el aviso. Revisa los datos e intenta de nuevo.';
         this.enviando = false;
         this.cdr.detectChanges();
       }

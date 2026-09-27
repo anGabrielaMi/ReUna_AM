@@ -12,6 +12,9 @@ export interface Aviso {
   fecha_edicion: string;       // fecha y hora de la última edición (ISO)
   comunidad: number | null;    // id de la comunidad (null = aviso de plataforma)
   comunidad_nombre: string;    // nombre visible del origen, ej: 'Comunidad Los Aromos' o 'Reúna'
+  publicado_por_nombre: string | null;  // usuario que lo publicó (null en avisos antiguos)
+  editado_por_nombre: string | null;    // usuario de la última edición (null si nunca se editó)
+  puede_editar: boolean;       // true si el usuario actual es líder de su comunidad (o admin)
 }
 
 // Datos para publicar un aviso (Publicar aviso – líder)
@@ -58,6 +61,11 @@ export class AvisosService {
   // Criterio 2: un aviso con su contenido completo
   getAviso(id: number): Observable<Aviso> {
     return this.http.get<Aviso>(`${this.apiUrl}${id}/`);
+  }
+
+  // Editar aviso desde la app (líder): solo título, contenido y categoría
+  actualizarAviso(id: number, cambios: Pick<NuevoAviso, 'titulo' | 'contenido' | 'categoria'>): Observable<Aviso> {
+    return this.http.patch<Aviso>(`${this.apiUrl}${id}/`, cambios);
   }
 
   // Publicar aviso: solo líderes (en su comunidad) y administradores
