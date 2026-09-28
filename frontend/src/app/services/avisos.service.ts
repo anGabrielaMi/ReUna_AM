@@ -15,6 +15,7 @@ export interface Aviso {
   publicado_por_nombre: string | null;  // usuario que lo publicó (null en avisos antiguos)
   editado_por_nombre: string | null;    // usuario de la última edición (null si nunca se editó)
   puede_editar: boolean;       // true si el usuario actual es líder de su comunidad (o admin)
+  fijado: boolean;             // true = aparece primero en la lista (lo marca el admin)
 }
 
 // Datos para publicar un aviso (Publicar aviso – líder)

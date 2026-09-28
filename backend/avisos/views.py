@@ -117,7 +117,8 @@ class AvisoViewSet(viewsets.ModelViewSet):
                 visibles |= Q(comunidad__usuarios=user)
             qs = qs.filter(visibles).distinct()
 
-        qs = qs.order_by('-fecha_publicacion', '-id')
+        # Fijados primero; luego por fecha (más recientes arriba)
+        qs = qs.order_by('-fijado', '-fecha_publicacion', '-id')
         params = self.request.query_params
 
         categoria = params.get('categoria')

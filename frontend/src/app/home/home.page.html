@@ -7,9 +7,17 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="main-content" class="ion-padding">
+<ion-content class="ion-padding">
   <div id="container">
-    <h2>Bienvenid@ 🌿</h2>
+    <!-- Navegación general: saludo según haya o no sesión -->
+    <h2 *ngIf="sesion.logueado(); else invitado">Hola, {{ sesion.usuario() }} 🌿</h2>
+    <ng-template #invitado><h2>Bienvenid@ a Reúna 🌿</h2></ng-template>
+
     <p>Selecciona una opción desde el menú lateral.</p>
+
+    <div class="acciones">
+      <ion-button routerLink="/avisos">Ver avisos</ion-button>
+      <ion-button *ngIf="!sesion.logueado()" routerLink="/login" fill="outline">Iniciar sesión</ion-button>
+    </div>
   </div>
 </ion-content>

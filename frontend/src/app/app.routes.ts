@@ -1,4 +1,8 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './services/auth.guard';
+
+// Navegación general: secciones del menú aún no construidas -> página "Próximamente"
+const proximamente = () => import('./proximamente/proximamente.page').then(m => m.ProximamentePage);
 
 export const routes: Routes = [
   {
@@ -21,11 +25,13 @@ export const routes: Routes = [
   {
     // Publicar aviso (líder). Debe ir ANTES de 'avisos/:id', si no "nuevo" se toma como id
     path: 'avisos/nuevo',
+    canActivate: [authGuard],   // requiere sesión
     loadComponent: () => import('./publicar-aviso/publicar-aviso.page').then(m => m.PublicarAvisoPage)
   },
   {
     // Editar aviso desde la app (líder): reutiliza el formulario de publicar
     path: 'avisos/:id/editar',
+    canActivate: [authGuard],   // requiere sesión
     loadComponent: () => import('./publicar-aviso/publicar-aviso.page').then(m => m.PublicarAvisoPage)
   },
   {
@@ -46,6 +52,12 @@ export const routes: Routes = [
     // NUEVO: pantalla donde se ingresa la nueva contraseña (uid y token llegan por query params)
     path: 'reset-password',
     loadComponent: () => import('./reset-password/reset-password.page').then(m => m.ResetPasswordPage)
-  }
-  // otras rutas...
+  },
+  // Secciones pendientes (cuando se construyan, se cambia loadComponent por la página real)
+  { path: 'historico',  loadComponent: proximamente, data: { titulo: 'Histórico' } },
+  { path: 'encuestas',  loadComponent: proximamente, data: { titulo: 'Encuestas' } },
+  { path: 'documentos', loadComponent: proximamente, data: { titulo: 'Documentos' } },
+  { path: 'ayuda',      loadComponent: proximamente, data: { titulo: 'Ayuda' } },
+  // Cualquier dirección que no exista vuelve a Home
+  { path: '**', redirectTo: 'home' }
 ];

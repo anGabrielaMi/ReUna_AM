@@ -1,0 +1,35 @@
+/* Navegación general: menú lateral */
+.sesion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sesion ion-icon {
+  font-size: 1.6rem;
+  color: var(--ion-color-primary);
+}
+
+ion-menu ion-item {
+  --border-radius: 10px;
+  margin: 2px 8px;
+}
+
+/* Sección en la que está el usuario */
+ion-menu ion-item.seleccionado {
+  --background: rgb(125 223 21 / 18%);
+  font-weight: 600;
+}
+
+ion-menu ion-item.seleccionado ion-icon {
+  color: #4d8f0a;
+}
+
+.opciones-sesion {
+  margin-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+}

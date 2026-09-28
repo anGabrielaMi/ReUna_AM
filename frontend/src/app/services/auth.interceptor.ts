@@ -3,10 +3,11 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { SesionService } from './sesion.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private sesion: SesionService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Login y refresh van sin token y sin esta lógica (evita reintentos en bucle)
@@ -79,8 +80,8 @@ export class AuthInterceptor implements HttpInterceptor {
   // Si el endpoint es público (ej: avisos sin comunidad) responde normal;
   // si exige sesión, recién ahí se manda al login.
   private reintentarSinSesion(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
+    // Cierra la sesión (el menú deja de mostrar al usuario)
+    this.sesion.cerrar();
     return next.handle(req).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 401 || err.status === 403) {

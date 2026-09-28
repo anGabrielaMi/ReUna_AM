@@ -191,3 +191,18 @@ ion-card-title {
 .btn-publicar {
   margin-top: 16px;
 }
+
+/* ---------- Avisos fijados ---------- */
+ion-card.fijado {
+  border: 2px solid rgb(125 223 21 / 60%);
+}
+
+.marca-fijado {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  color: #4d8f0a;
+  font-size: 0.8rem;
+  font-weight: 600;
+}

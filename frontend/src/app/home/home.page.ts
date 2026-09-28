@@ -9,6 +9,8 @@ import {
   IonMenuButton
 } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { SesionService } from '../services/sesion.service';
 
 
 @Component({
@@ -24,8 +26,10 @@ import { CommonModule } from '@angular/common';
     IonToolbar,
     IonButton,
     IonButtons,
-    IonMenuButton
-    
+    IonMenuButton,
+    RouterLink
   ]
 })
-export class HomePage {}
+export class HomePage {
+  constructor(public sesion: SesionService) {}
+}

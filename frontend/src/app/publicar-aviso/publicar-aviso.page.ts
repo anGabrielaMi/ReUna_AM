@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -15,7 +15,8 @@ import {
   IonSelect,
   IonSelectOption,
   IonSpinner,
-  IonNote
+  IonNote,
+  NavController
 } from '@ionic/angular';
 
 import { AvisosService, NuevoAviso, CATEGORIAS_AVISO } from '../services/avisos.service';
@@ -66,7 +67,7 @@ export class PublicarAvisoPage {
     private avisosService: AvisosService,
     private comunidadService: ComunidadService,
     private route: ActivatedRoute,
-    private router: Router,
+    private navCtrl: NavController,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -167,8 +168,10 @@ export class PublicarAvisoPage {
     peticion.subscribe({
       next: (guardado) => {
         this.enviando = false;
-        // Editar vuelve al detalle; publicar vuelve a la lista
-        this.router.navigate(this.modoEdicion ? ['/avisos', guardado.id] : ['/avisos']);
+        // Editar vuelve al detalle; publicar vuelve a la lista.
+        // navigateBack "retrocede": así el botón Volver del detalle lleva a la lista
+        // y no de nuevo al formulario
+        this.navCtrl.navigateBack(this.modoEdicion ? ['/avisos', guardado.id] : ['/avisos']);
       },
       error: (err) => {
         console.error('Error guardando aviso:', err);

@@ -1,36 +1,60 @@
 <ion-app>
-  <ion-menu contentId="main-content">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Menú</ion-title>
-      </ion-toolbar>
-    </ion-header>
+  <!-- En computador (pantalla grande) el menú queda fijo a la izquierda;
+       en celular se abre con el botón ☰ -->
+  <ion-split-pane contentId="main-content" when="lg">
+    <ion-menu contentId="main-content">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Reúna</ion-title>
+        </ion-toolbar>
+      </ion-header>
 
-    <ion-content>
-      <ion-list>
-        <ion-item routerLink="/avisos" button detail="false">
-          <ion-icon slot="start" name="notifications-outline"></ion-icon>
-          <ion-label>Avisos</ion-label>
-        </ion-item>
-        <ion-item routerLink="/calendario" button detail="false">
-          <ion-icon slot="start" name="calendar-outline"></ion-icon>
-          <ion-label>Histórico</ion-label>
-        </ion-item>
-        <ion-item routerLink="/encuestas" button detail="false">
-          <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-          <ion-label>Encuestas</ion-label>
-        </ion-item>
-        <ion-item routerLink="/documentos" button detail="false">
-          <ion-icon slot="start" name="document-text-outline"></ion-icon>
-          <ion-label>Documentos</ion-label>
-        </ion-item>
-        <ion-item routerLink="/ayuda" button detail="false">
-          <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-          <ion-label>Ayuda</ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
+      <ion-content>
+        <!-- Estado de la sesión -->
+        <div class="sesion">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <span *ngIf="sesion.logueado(); else sinSesion">Hola, <strong>{{ sesion.usuario() }}</strong></span>
+          <ng-template #sinSesion><span>No has iniciado sesión</span></ng-template>
+        </div>
 
-  <ion-router-outlet id="main-content"></ion-router-outlet>
+        <ion-list lines="none">
+          <!-- ion-menu-toggle cierra el menú al elegir una opción (en celular) -->
+          <ion-menu-toggle [autoHide]="false" *ngFor="let s of secciones">
+            <ion-item [routerLink]="s.ruta" routerLinkActive="seleccionado" routerDirection="root"
+                      button detail="false">
+              <ion-icon slot="start" [name]="s.icono"></ion-icon>
+              <ion-label>{{ s.nombre }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+
+        <!-- Opciones de sesión -->
+        <ion-list lines="none" class="opciones-sesion">
+          <ng-container *ngIf="!sesion.logueado()">
+            <ion-menu-toggle [autoHide]="false">
+              <ion-item routerLink="/login" routerLinkActive="seleccionado" button detail="false">
+                <ion-icon slot="start" name="log-in-outline"></ion-icon>
+                <ion-label>Iniciar sesión</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+            <ion-menu-toggle [autoHide]="false">
+              <ion-item routerLink="/register" routerLinkActive="seleccionado" button detail="false">
+                <ion-icon slot="start" name="person-add-outline"></ion-icon>
+                <ion-label>Registrarse</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ng-container>
+
+          <ion-menu-toggle [autoHide]="false" *ngIf="sesion.logueado()">
+            <ion-item button detail="false" (click)="cerrarSesion()">
+              <ion-icon slot="start" name="log-out-outline"></ion-icon>
+              <ion-label>Cerrar sesión</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
 </ion-app>

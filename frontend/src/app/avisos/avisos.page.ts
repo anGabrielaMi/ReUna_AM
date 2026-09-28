@@ -23,7 +23,7 @@ import {
   IonBadge
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { arrowForwardOutline, funnelOutline, closeCircleOutline, addOutline } from 'ionicons/icons';
+import { arrowForwardOutline, funnelOutline, closeCircleOutline, addOutline, pin } from 'ionicons/icons';
 
 import { AvisosService, Aviso, FiltrosAvisos, CATEGORIAS_AVISO } from '../services/avisos.service';
 import { ComunidadService } from '../services/comunidad.service';
@@ -71,7 +71,7 @@ export class AvisosPage implements OnInit {
     private comunidadService: ComunidadService,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ arrowForwardOutline, funnelOutline, closeCircleOutline, addOutline });
+    addIcons({ arrowForwardOutline, funnelOutline, closeCircleOutline, addOutline, pin });
   }
 
   ngOnInit() {}

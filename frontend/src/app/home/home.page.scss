@@ -19,4 +19,12 @@
   p {
     color: #000000 !important; /* texto negro visible */
   }
+
+  .acciones {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 12px;
+  }
 }

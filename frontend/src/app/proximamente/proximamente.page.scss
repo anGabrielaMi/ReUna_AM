@@ -1,0 +1,24 @@
+.proximamente {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.proximamente ion-icon {
+  font-size: 3.5rem;
+  color: var(--ion-color-primary);
+}
+
+.proximamente h2 {
+  margin: 8px 0 0;
+  color: #1f2937;
+}
+
+.proximamente p {
+  margin: 0 0 12px;
+  color: #6b7280;
+}

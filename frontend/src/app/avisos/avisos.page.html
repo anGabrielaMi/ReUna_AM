@@ -68,8 +68,12 @@
 
   <!-- Criterio 1: lista ordenada por fecha (el orden viene desde la API) -->
   <main class="cards-grid">
-    <ion-card *ngFor="let aviso of avisos" button [routerLink]="['/avisos', aviso.id]">
+    <ion-card *ngFor="let aviso of avisos" button [routerLink]="['/avisos', aviso.id]" [class.fijado]="aviso.fijado">
       <ion-card-header>
+        <!-- Aviso fijado: siempre aparece primero -->
+        <span *ngIf="aviso.fijado" class="marca-fijado">
+          <ion-icon name="pin"></ion-icon> Fijado
+        </span>
         <ion-badge [class]="'cat cat-' + aviso.categoria">{{ aviso.categoria_display }}</ion-badge>
         <ion-card-title>{{ aviso.titulo }}</ion-card-title>
         <ion-card-subtitle>{{ aviso.comunidad_nombre }} · Publicado: {{ aviso.fecha_publicacion | date:'dd-MM-yyyy' }}</ion-card-subtitle>

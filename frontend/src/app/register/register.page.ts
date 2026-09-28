@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar,
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonItem, IonLabel, IonInput, IonButton, IonText
 } from '@ionic/angular';
@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonItem, IonLabel, IonInput, IonButton, IonText,
     CommonModule, FormsModule, RouterLink

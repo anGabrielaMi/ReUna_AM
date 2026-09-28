@@ -14,9 +14,10 @@ class AvisoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Aviso
-        read_only_fields = ['fecha_publicacion', 'fecha_edicion', 'publicado_por', 'editado_por']
+        # 'fijado' solo se cambia desde el admin de Django (un líder no puede fijar vía API)
+        read_only_fields = ['fecha_publicacion', 'fecha_edicion', 'publicado_por', 'editado_por', 'fijado']
         fields = ['id', 'titulo', 'contenido', 'fecha_publicacion', 'categoria', 'categoria_display', 'fecha_edicion', 'comunidad', 'comunidad_nombre',
-                  'publicado_por_nombre', 'editado_por_nombre', 'puede_editar']
+                  'publicado_por_nombre', 'editado_por_nombre', 'puede_editar', 'fijado']
 
     def get_comunidad_nombre(self, obj):
         return obj.comunidad.nombre if obj.comunidad else 'Reúna'

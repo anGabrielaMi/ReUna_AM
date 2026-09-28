@@ -20,6 +20,9 @@ class Aviso(models.Model):
     fecha_edicion = models.DateTimeField(auto_now=True)
     contenido = models.TextField()
     categoria = models.CharField(max_length=20, choices=CATEGORIAS, default='general')
+    # Avisos fijados: aparecen siempre primero en la lista (ej: bienvenida, urgentes).
+    # Por ahora solo el administrador los marca, desde el admin de Django
+    fijado = models.BooleanField(default=False, help_text='Si está marcado, el aviso aparece primero en la lista.')
     # Clasificar avisos según comunidad:
     #   con comunidad  -> solo lo ven los usuarios adscritos a esa comunidad
     #   sin comunidad  -> aviso de plataforma, visible para todos (incluso sin sesión)
@@ -40,8 +43,8 @@ class Aviso(models.Model):
     )
 
     class Meta:
-        # Criterio 1: más recientes primero (id desempata avisos del mismo día)
-        ordering = ['-fecha_publicacion', '-id']
+        # Fijados primero; luego los más recientes (id desempata avisos del mismo día)
+        ordering = ['-fijado', '-fecha_publicacion', '-id']
 
     def __str__(self):
         return self.titulo
