@@ -8,7 +8,13 @@ from django.contrib.auth.models import User
 class ComunidadViewSet(viewsets.ModelViewSet):
     queryset = Comunidad.objects.all()
     serializer_class = ComunidadSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        # Seguridad: crear, editar o borrar comunidades es solo del administrador (is_staff).
+        # Ver la lista, ver "mias", unirse y salir solo requiere sesión.
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
     # Publicar aviso: GET /api/comunidades/mias/ -> comunidades del usuario con su rol
     # La app lo usa para saber si es líder (mostrar "Publicar aviso") y en qué comunidades

@@ -1,0 +1,94 @@
+ion-content {
+  --background: #f1f2f7;
+}
+
+.centrado {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(31 41 55 / 10%);
+}
+
+.comunidad-fija {
+  margin: 0;
+  color: #374151;
+}
+
+.pregunta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fafafb;
+}
+
+.pregunta-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pregunta-cabecera h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.alternativa {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Círculo que recuerda que es de opción única */
+.marca {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #9ca3af;
+  border-radius: 50%;
+}
+
+.alternativa ion-input {
+  flex: 1;
+}
+
+ion-note {
+  font-size: 0.85rem;
+}
+
+.pendientes {
+  margin: 0;
+  padding-left: 20px;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.mensaje-info {
+  max-width: 640px;
+  margin: 24px auto;
+  text-align: center;
+  color: #6b7280;
+}
+
+.mensaje-error {
+  margin: 0;
+  color: var(--ion-color-danger);
+}
+
+.centrado-texto {
+  text-align: center;
+}

@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Documentos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <section class="page-header">
+    <h1>Documentos</h1>
+    <p>Documentos compartidos por los líderes de tus comunidades.</p>
+    <!-- Subir documento: solo visible para líderes -->
+    <ion-button *ngIf="esLider" class="btn-subir" routerLink="/documentos/nuevo">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Subir documento
+    </ion-button>
+  </section>
+
+  <!-- Si pertenece a varias comunidades, puede ver solo una -->
+  <section class="filtros" *ngIf="misComunidades.length > 1">
+    <ion-select
+      label="Comunidad"
+      labelPlacement="stacked"
+      fill="outline"
+      interface="popover"
+      [(ngModel)]="comunidadFiltro"
+      (ionChange)="cargarDocumentos()">
+      <ion-select-option [value]="null">Todas mis comunidades</ion-select-option>
+      <ion-select-option *ngFor="let c of misComunidades" [value]="c.id">{{ c.nombre }}</ion-select-option>
+    </ion-select>
+  </section>
+
+  <p *ngIf="error" class="mensaje-error">{{ error }}</p>
+
+  <div *ngIf="cargando" class="centrado">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- Consultar documento – criterios 1 y 2: lista con nombre, comunidad, quién y cuándo -->
+  <main class="lista" *ngIf="!cargando">
+    <article *ngFor="let doc of documentos" class="documento">
+      <ion-icon class="icono" [name]="icono(doc)"></ion-icon>
+      <div class="info">
+        <h2>{{ doc.titulo }}</h2>
+        <p class="detalle">
+          {{ doc.comunidad_nombre }}
+          · Subido por {{ doc.subido_por_nombre || '—' }}
+          · {{ doc.fecha_subida | date:'dd-MM-yyyy' }}
+        </p>
+        <p class="archivo">{{ doc.nombre_archivo }} <span *ngIf="doc.tamano">({{ tamanoLegible(doc.tamano) }})</span></p>
+      </div>
+      <ion-button fill="outline" (click)="descargar(doc)" [disabled]="descargandoId === doc.id">
+        <ion-spinner *ngIf="descargandoId === doc.id" name="crescent"></ion-spinner>
+        <ng-container *ngIf="descargandoId !== doc.id">
+          <ion-icon slot="start" name="download-outline"></ion-icon>
+          Descargar
+        </ng-container>
+      </ion-button>
+    </article>
+
+    <div *ngIf="!error && documentos.length === 0" class="sin-documentos">
+      <p *ngIf="misComunidades.length === 0">Aún no perteneces a ninguna comunidad.</p>
+      <p *ngIf="misComunidades.length > 0">No hay documentos disponibles.</p>
+    </div>
+  </main>
+</ion-content>

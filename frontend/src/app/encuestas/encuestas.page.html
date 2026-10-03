@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Encuestas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <section class="page-header">
+    <h1>Encuestas</h1>
+    <p>Participa en las decisiones de tus comunidades.</p>
+    <!-- Crear encuesta: solo visible para líderes -->
+    <ion-button *ngIf="esLider" class="btn-crear" routerLink="/encuestas/nueva">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Crear encuesta
+    </ion-button>
+  </section>
+
+  <section class="filtros">
+    <ion-segment [value]="estado" (ionChange)="cambiarEstado($event)">
+      <ion-segment-button value="abiertas"><ion-label>Abiertas</ion-label></ion-segment-button>
+      <ion-segment-button value="cerradas"><ion-label>Cerradas</ion-label></ion-segment-button>
+      <ion-segment-button value=""><ion-label>Todas</ion-label></ion-segment-button>
+    </ion-segment>
+  </section>
+
+  <p *ngIf="error" class="mensaje-error">{{ error }}</p>
+
+  <div *ngIf="cargando" class="centrado">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <main class="lista" *ngIf="!cargando">
+    <article *ngFor="let e of encuestas" class="encuesta" [class.cerrada]="!e.abierta">
+      <div class="info">
+        <div class="etiquetas">
+          <ion-badge [color]="e.abierta ? 'success' : 'medium'">{{ e.abierta ? 'Abierta' : 'Cerrada' }}</ion-badge>
+          <!-- Responder encuesta – criterio 5: queda marcada como "Respondida" -->
+          <span *ngIf="e.ya_respondi" class="respondida">
+            <ion-icon name="checkmark-circle"></ion-icon> Respondida
+          </span>
+        </div>
+        <h2>{{ e.titulo }}</h2>
+        <p class="detalle">
+          {{ e.comunidad_nombre }} · {{ e.preguntas.length }} {{ e.preguntas.length === 1 ? 'pregunta' : 'preguntas' }}
+        </p>
+        <p class="cierre">
+          <ion-icon name="time-outline"></ion-icon>
+          {{ e.abierta ? 'Cierra' : 'Cerró' }} el {{ e.fecha_cierre | date:'dd-MM-yyyy, HH:mm' }}
+        </p>
+      </div>
+
+      <div class="acciones">
+        <ion-button *ngIf="e.puede_editar && e.abierta" fill="clear" [routerLink]="['/encuestas', e.id, 'editar']">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          Editar
+        </ion-button>
+        <ion-button [fill]="e.abierta && !e.ya_respondi ? 'solid' : 'outline'" [routerLink]="['/encuestas', e.id]">
+          {{ e.abierta && !e.ya_respondi ? 'Responder' : 'Ver' }}
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </article>
+
+    <div *ngIf="!error && encuestas.length === 0" class="vacio">
+      <p>{{ mensajeVacio() }}</p>
+    </div>
+  </main>
+</ion-content>

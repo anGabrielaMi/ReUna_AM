@@ -1,0 +1,139 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/encuestas" text="Volver"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ modoEdicion ? 'Editar encuesta' : 'Crear encuesta' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="cargando" class="centrado">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- Criterios 5 y 6: un colaborador no puede crear; no se edita si ya hay respuestas -->
+  <p *ngIf="!cargando && !puedeUsarFormulario && !error" class="mensaje-info">
+    {{ modoEdicion
+        ? 'Esta encuesta ya no se puede editar: alguien ya respondió, ya cerró, o no eres líder de su comunidad.'
+        : 'Solo los líderes de una comunidad pueden crear encuestas.' }}
+  </p>
+
+  <form *ngIf="!cargando && puedeUsarFormulario" class="formulario" (ngSubmit)="guardar()">
+    <!-- Comunidad: fija al editar; automática si es líder de una sola; si es de varias, elige -->
+    <p *ngIf="modoEdicion" class="comunidad-fija">Encuesta de <strong>{{ comunidadNombre }}</strong></p>
+    <p *ngIf="!modoEdicion && !variasComunidades" class="comunidad-fija">
+      Se publicará en <strong>{{ comunidadesLider[0].nombre }}</strong>
+    </p>
+    <ion-select
+      *ngIf="variasComunidades"
+      label="Comunidad"
+      labelPlacement="stacked"
+      fill="outline"
+      interface="popover"
+      placeholder="Elige la comunidad"
+      name="comunidad"
+      [(ngModel)]="encuesta.comunidad">
+      <ion-select-option *ngFor="let c of comunidadesLider" [value]="c.id">{{ c.nombre }}</ion-select-option>
+    </ion-select>
+
+    <ion-input
+      label="Título"
+      labelPlacement="stacked"
+      fill="outline"
+      maxlength="200"
+      placeholder="Ej: ¿Cambiamos el horario de la reunión mensual?"
+      name="titulo"
+      [(ngModel)]="encuesta.titulo">
+    </ion-input>
+
+    <ion-textarea
+      label="Descripción (opcional)"
+      labelPlacement="stacked"
+      fill="outline"
+      [autoGrow]="true"
+      rows="2"
+      placeholder="Contexto para quienes respondan"
+      name="descripcion"
+      [(ngModel)]="encuesta.descripcion">
+    </ion-textarea>
+
+    <ion-input
+      type="datetime-local"
+      label="Fecha y hora de cierre"
+      labelPlacement="stacked"
+      fill="outline"
+      [min]="ahoraLocal"
+      name="fecha_cierre"
+      [(ngModel)]="encuesta.fecha_cierre">
+    </ion-input>
+
+    <!-- Preguntas (1 a 5), cada una con 2 a 5 alternativas de opción única -->
+    <section *ngFor="let p of encuesta.preguntas; let i = index; trackBy: porIndice" class="pregunta">
+      <div class="pregunta-cabecera">
+        <h3>Pregunta {{ i + 1 }}</h3>
+        <ion-button *ngIf="encuesta.preguntas.length > limites.minPreguntas" type="button" fill="clear"
+                    color="danger" size="small" (click)="quitarPregunta(i)">
+          <ion-icon slot="start" name="trash-outline"></ion-icon>
+          Quitar
+        </ion-button>
+      </div>
+
+      <ion-input
+        label="Texto de la pregunta"
+        labelPlacement="stacked"
+        fill="outline"
+        maxlength="300"
+        placeholder="Ej: ¿Qué día prefieres?"
+        [name]="'pregunta' + i"
+        [(ngModel)]="p.texto">
+      </ion-input>
+
+      <div *ngFor="let a of p.alternativas; let j = index; trackBy: porIndice" class="alternativa">
+        <span class="marca"></span>
+        <ion-input
+          fill="outline"
+          maxlength="200"
+          [placeholder]="'Alternativa ' + (j + 1)"
+          [attr.aria-label]="'Alternativa ' + (j + 1) + ' de la pregunta ' + (i + 1)"
+          [name]="'p' + i + 'a' + j"
+          [(ngModel)]="a.texto">
+        </ion-input>
+        <ion-button *ngIf="p.alternativas.length > limites.minAlternativas" type="button" fill="clear"
+                    color="medium" (click)="quitarAlternativa(p, j)" aria-label="Quitar alternativa">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <ion-button *ngIf="p.alternativas.length < limites.maxAlternativas" type="button" fill="clear"
+                  size="small" (click)="agregarAlternativa(p)">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        Agregar alternativa
+      </ion-button>
+    </section>
+
+    <ion-button *ngIf="encuesta.preguntas.length < limites.maxPreguntas" type="button" fill="outline"
+                (click)="agregarPregunta()">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Agregar pregunta ({{ encuesta.preguntas.length }} de {{ limites.maxPreguntas }})
+    </ion-button>
+
+    <ion-note>
+      Máximo {{ limites.maxPreguntas }} preguntas, cada una con {{ limites.minAlternativas }} a
+      {{ limites.maxAlternativas }} alternativas. Una vez que alguien responda, la encuesta ya no se podrá editar.
+    </ion-note>
+
+    <ul *ngIf="problemas.length" class="pendientes">
+      <li *ngFor="let m of problemas">{{ m }}</li>
+    </ul>
+
+    <p *ngIf="error" class="mensaje-error">{{ error }}</p>
+
+    <ion-button type="submit" expand="block" [disabled]="problemas.length > 0 || enviando">
+      <ion-spinner *ngIf="enviando" name="crescent"></ion-spinner>
+      <span *ngIf="!enviando">{{ modoEdicion ? 'Guardar cambios' : 'Crear encuesta' }}</span>
+    </ion-button>
+  </form>
+
+  <p *ngIf="!cargando && !puedeUsarFormulario && error" class="mensaje-error centrado-texto">{{ error }}</p>
+</ion-content>

@@ -4,7 +4,7 @@
 
 Aplicación comunitaria desarrollada con **Ionic/Angular** en el frontend y **Django** en el backend.  
 Utiliza **PostgreSQL** como base de datos principal para registro, login y gestión de información.  
-Se proyecta la integración con **Google Drive API** para almacenamiento y consulta de documentos.  
+Los líderes de cada comunidad pueden subir documentos, que se guardan en el servidor y se consultan a través de la API REST.  
 
 
 ---
@@ -19,14 +19,16 @@ Se proyecta la integración con **Google Drive API** para almacenamiento y consu
 - **Backend (Django)**
   - `reuna/` → configuración principal
   - `apps/` → módulos de negocio
-  - Autenticación JWT y roles
+  - Autenticación JWT y roles (colaborador y líder por comunidad, administrador)
+  - `media/` → documentos subidos por los líderes (no se sube a GitHub)
   - Panel admin habilitado
 
 - **Base de datos**
   - Producción y desarrollo: **PostgreSQL**
 
-- **APIs externas (planificadas)**
-  - [Google Drive API](https://developers.google.com/drive) para gestión de documentos comunitarios
+- **Documentos**
+  - Se guardan en el servidor (`backend/media/`) con `FileField` de Django
+  - Se descargan por `/api/documentos/<id>/descargar/`, que solo permite el acceso a miembros de la comunidad
 
 ---
 
@@ -56,6 +58,17 @@ npm install
 
 # Ejecutar en desarrollo
 ionic serve
-`
+```
 
+---
 
+## Pruebas automáticas
+
+El backend tiene pruebas automáticas de la API (documentos, comunidades, avisos y encuestas).
+Desde la carpeta `backend`:
+
+```
+python manage.py test documentos comunidades avisos encuestas
+```
+
+La guía completa (preparación, qué se prueba, cómo leer el resultado y problemas frecuentes) está en [`backend/TESTING.md`](backend/TESTING.md).

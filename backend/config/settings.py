@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'avisos',
     'comunidades',
-    'registro'
+    'registro',
+    'documentos',
+    'encuestas',
 ]
 
 MIDDLEWARE = [
@@ -132,6 +134,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Archivos subidos (Subir documento). Se guardan en backend/media/ (no se sube a GitHub).
+# No se publican como estáticos: se descargan por /api/documentos/<id>/descargar/,
+# que revisa que el usuario sea miembro de la comunidad.
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -156,8 +164,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        # JWT va PRIMERO: así, cuando el token vence, la API responde 401 (no 403)
+        # y la app (auth.interceptor.ts) lo renueva sola con el refresh token.
+        # Si Session fuera primero, un token vencido daría 403 y la app mostraría
+        # "Given token not valid for any token type" sin renovarlo.
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }

@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/documentos" text="Volver"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Subir documento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="cargando" class="centrado">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- Subir documento – criterio 5: un colaborador no puede subir -->
+  <p *ngIf="!cargando && !esLider && !error" class="mensaje-info">
+    Solo los líderes de una comunidad pueden subir documentos.
+  </p>
+
+  <form *ngIf="!cargando && esLider" class="formulario" (ngSubmit)="subir()">
+    <!-- Comunidad automática si es líder de una sola; si es de varias, elige -->
+    <p *ngIf="!variasComunidades" class="comunidad-fija">
+      Subirás a <strong>{{ comunidadesLider[0].nombre }}</strong>
+    </p>
+    <ion-select
+      *ngIf="variasComunidades"
+      label="Comunidad"
+      labelPlacement="stacked"
+      fill="outline"
+      interface="popover"
+      placeholder="Elige la comunidad"
+      name="comunidad"
+      [(ngModel)]="comunidad">
+      <ion-select-option *ngFor="let c of comunidadesLider" [value]="c.id">{{ c.nombre }}</ion-select-option>
+    </ion-select>
+
+    <!-- Selector de archivo (Ionic no trae uno propio: se usa el del navegador, oculto) -->
+    <div class="selector-archivo">
+      <input #inputArchivo type="file" [accept]="aceptar" (change)="elegirArchivo($event)" hidden>
+      <ion-button type="button" fill="outline" (click)="inputArchivo.click()">
+        <ion-icon slot="start" name="attach-outline"></ion-icon>
+        {{ archivo ? 'Cambiar archivo' : 'Elegir archivo' }}
+      </ion-button>
+      <span class="nombre-archivo">{{ archivo ? archivo.name : 'Ningún archivo seleccionado' }}</span>
+    </div>
+    <ion-note>Formatos: {{ formatos }}. Tamaño máximo: {{ tamanoMaximo }} MB.</ion-note>
+    <p *ngIf="errorArchivo" class="mensaje-error">{{ errorArchivo }}</p>
+
+    <ion-input
+      label="Título"
+      labelPlacement="stacked"
+      fill="outline"
+      maxlength="200"
+      placeholder="Ej: Acta reunión de septiembre"
+      name="titulo"
+      [(ngModel)]="titulo">
+    </ion-input>
+
+    <ion-note>Todos los campos son obligatorios.</ion-note>
+
+    <p *ngIf="error" class="mensaje-error">{{ error }}</p>
+
+    <ion-button type="submit" expand="block" [disabled]="!formularioValido || enviando">
+      <ion-spinner *ngIf="enviando" name="crescent"></ion-spinner>
+      <span *ngIf="!enviando">Subir</span>
+    </ion-button>
+  </form>
+
+  <p *ngIf="!cargando && !esLider && error" class="mensaje-error centrado-texto">{{ error }}</p>
+</ion-content>

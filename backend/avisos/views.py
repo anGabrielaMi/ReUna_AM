@@ -3,7 +3,7 @@ from django.utils.dateparse import parse_date
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
-from comunidades.models import UsuarioComunidad
+from comunidades.permisos import ids_comunidades_lider, comunidad_para_publicar
 from .models import Aviso
 from .serializers import AvisoSerializer
 
@@ -33,14 +33,10 @@ class AvisoViewSet(viewsets.ModelViewSet):
         return [IsAdminUser()]
 
     def _ids_lider(self):
-        # Comunidades donde el usuario actual es líder (se calcula una vez por petición)
+        # Comunidades donde el usuario actual es líder (se calcula una vez por petición).
+        # La regla vive en comunidades/permisos.py y la comparten avisos y documentos
         if not hasattr(self, '_cache_ids_lider'):
-            user = self.request.user
-            self._cache_ids_lider = set(
-                UsuarioComunidad.objects
-                .filter(usuario=user, rol=UsuarioComunidad.ROL_LIDER)
-                .values_list('comunidad_id', flat=True)
-            ) if user.is_authenticated else set()
+            self._cache_ids_lider = ids_comunidades_lider(self.request.user)
         return self._cache_ids_lider
 
     def get_serializer_context(self):
@@ -80,27 +76,17 @@ class AvisoViewSet(viewsets.ModelViewSet):
             serializer.save(publicado_por=user)
             return
 
-        # Comunidades donde el usuario es líder
-        ids_lider = self._ids_lider()
-
-        # Criterio: un colaborador no puede publicar
-        if not ids_lider:
-            raise PermissionDenied('Solo los líderes de una comunidad pueden publicar avisos.')
-
-        comunidad = serializer.validated_data.get('comunidad')
-
-        # Criterio: se asocia automáticamente a la comunidad del líder; si es de varias, elige
-        if comunidad is None:
-            if len(ids_lider) == 1:
-                serializer.save(comunidad_id=next(iter(ids_lider)), publicado_por=user)
-                return
-            raise ValidationError({'comunidad': 'Eres líder en varias comunidades: elige a cuál va el aviso.'})
-
-        # Criterio: no puede publicar en comunidades donde no es líder
-        if comunidad.id not in ids_lider:
-            raise PermissionDenied('No eres líder de esa comunidad.')
-
-        serializer.save(publicado_por=user)
+        # Criterios: un colaborador no puede publicar; se asocia automáticamente a la
+        # comunidad del líder (si es de varias, elige); no puede publicar donde no es líder.
+        # (permiso de líder reutilizable: comunidades/permisos.py)
+        # (se quita 'comunidad' de los datos para guardar solo el id ya validado)
+        comunidad_id = comunidad_para_publicar(
+            user,
+            serializer.validated_data.pop('comunidad', None),
+            ids_lider=self._ids_lider(),
+            que='publicar avisos',
+        )
+        serializer.save(comunidad_id=comunidad_id, publicado_por=user)
 
     def get_queryset(self):
         user = self.request.user

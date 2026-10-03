@@ -53,10 +53,44 @@ export const routes: Routes = [
     path: 'reset-password',
     loadComponent: () => import('./reset-password/reset-password.page').then(m => m.ResetPasswordPage)
   },
+  {
+    // Consultar documento: solo miembros de comunidades (requiere sesión)
+    path: 'documentos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./documentos/documentos.page').then(m => m.DocumentosPage)
+  },
+  {
+    // Subir documento (líder)
+    path: 'documentos/nuevo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./subir-documento/subir-documento.page').then(m => m.SubirDocumentoPage)
+  },
+  {
+    // Encuestas de mis comunidades (requiere sesión)
+    path: 'encuestas',
+    canActivate: [authGuard],
+    loadComponent: () => import('./encuestas/encuestas.page').then(m => m.EncuestasPage)
+  },
+  {
+    // Crear encuesta (líder). Debe ir ANTES de 'encuestas/:id', si no "nueva" se toma como id
+    path: 'encuestas/nueva',
+    canActivate: [authGuard],
+    loadComponent: () => import('./crear-encuesta/crear-encuesta.page').then(m => m.CrearEncuestaPage)
+  },
+  {
+    // Editar encuesta (líder), solo si nadie ha respondido: reutiliza el formulario de crear
+    path: 'encuestas/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./crear-encuesta/crear-encuesta.page').then(m => m.CrearEncuestaPage)
+  },
+  {
+    // Responder encuesta
+    path: 'encuestas/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./responder-encuesta/responder-encuesta.page').then(m => m.ResponderEncuestaPage)
+  },
   // Secciones pendientes (cuando se construyan, se cambia loadComponent por la página real)
   { path: 'historico',  loadComponent: proximamente, data: { titulo: 'Histórico' } },
-  { path: 'encuestas',  loadComponent: proximamente, data: { titulo: 'Encuestas' } },
-  { path: 'documentos', loadComponent: proximamente, data: { titulo: 'Documentos' } },
   { path: 'ayuda',      loadComponent: proximamente, data: { titulo: 'Ayuda' } },
   // Cualquier dirección que no exista vuelve a Home
   { path: '**', redirectTo: 'home' }

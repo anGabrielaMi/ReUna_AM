@@ -70,6 +70,8 @@ __pycache__/
 *.pyo
 *.egg-info/
 db.sqlite3
+# Archivos subidos por usuarios (documentos)
+backend/media/
 venv/
 env/
 *.coverage
@@ -85,3 +87,8 @@ Thumbs.db
 *.pem
 *.crt
 secrets.json
+
+# --- Pruebas automatizadas (Playwright): resultados, videos e informes ---
+test-results/
+playwright-report/
+blob-report/

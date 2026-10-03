@@ -20,10 +20,14 @@ from rest_framework import routers
 from avisos.views import AvisoViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from comunidades.views import ComunidadViewSet,RegistroView
+from documentos.views import DocumentoViewSet
+from encuestas.views import EncuestaViewSet
 
 router = routers.DefaultRouter()
 router.register(r'avisos', AvisoViewSet)
 router.register(r'comunidades', ComunidadViewSet)
+router.register(r'documentos', DocumentoViewSet)   # Subir / Consultar documento
+router.register(r'encuestas', EncuestaViewSet)     # Crear / Responder encuesta
 
 urlpatterns = [
     path('admin/', admin.site.urls),

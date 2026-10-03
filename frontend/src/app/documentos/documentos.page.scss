@@ -1,0 +1,115 @@
+ion-content {
+  --background: #f1f2f7;
+}
+
+.page-header,
+.filtros,
+.lista,
+.mensaje-error {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-header {
+  padding: 32px 4px 12px;
+}
+
+.page-header h1 {
+  margin: 0 0 8px;
+  color: #1f2937;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+}
+
+.page-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.btn-subir {
+  margin-top: 16px;
+}
+
+.filtros {
+  padding: 8px 4px;
+  max-width: 900px;
+}
+
+.filtros ion-select {
+  max-width: 320px;
+}
+
+.centrado {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 4px 40px;
+}
+
+.documento {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(31 41 55 / 8%);
+}
+
+.icono {
+  flex-shrink: 0;
+  font-size: 2rem;
+  color: var(--ion-color-primary);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.info h2 {
+  margin: 0 0 4px;
+  color: #1f2937;
+  font-size: 1.05rem;
+}
+
+.info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.info .archivo {
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.sin-documentos {
+  padding: 32px 0;
+  text-align: center;
+  color: #6b7280;
+}
+
+.mensaje-error {
+  color: var(--ion-color-danger);
+}
+
+/* Celular: el botón Descargar baja debajo del texto */
+@media (max-width: 576px) {
+  .documento {
+    flex-wrap: wrap;
+  }
+
+  .documento ion-button {
+    width: 100%;
+  }
+}
